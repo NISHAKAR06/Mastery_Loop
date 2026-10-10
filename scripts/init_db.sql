@@ -33,7 +33,8 @@ CHECK (skill_id <> prerequisite_id) -- no self-loops; cycles checked by seed
 -- ============================================================
 CREATE TABLE IF NOT EXISTS items (
 item_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-item_code VARCHAR(40) UNI
+item_code VARCHAR(40) UNIQUE NOT NULL,
+stem TEXT NOT NULL,
 item_type VARCHAR(20) NOT NULL DEFAULT 'mcq'
 CHECK (item_type IN ('mcq','multi_select','numeric','code','short_text')),
 content_area VARCHAR(30) NOT NULL
