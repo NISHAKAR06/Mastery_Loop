@@ -1,0 +1,36 @@
+# Directed acyclic prerequisite graph. Mastery propagates along these edges.
+domain: Python Programming
+skills:
+- id: PY.VAR
+name: Variables and types
+prerequisites: []
+- id: PY.CTRL
+name: Control flow
+prerequisites: [PY.VAR]
+- id: PY.FUNC
+name: Functions and scope
+prerequisites: [PY.CTRL]
+- id: PY.SEQ
+name: Sequences and slicing
+prerequisites: [PY.VAR]
+- id: PY.DICT
+name: Dictionaries and sets
+prerequisites: [PY.SEQ]
+- id: PY.COMP
+name: Comprehensions
+prerequisites: [PY.SEQ, PY.CTRL]
+- id: PY.OOP
+name: Classes and objects
+prerequisites: [PY.FUNC]
+- id: PY.EXC
+name: Exceptions
+prerequisites: [PY.FUNC]
+- id: PY.FILE
+name: File and context managers
+prerequisites: [PY.EXC, PY.OOP]
+- id: PY.ITER
+name: Iterators and generators
+prerequisites: [PY.COMP, PY.FUNC]
+mastery:
+threshold_theta: 0.5 # skill-level theta above which a skill counts as mastered
+min_evidence_items: 3

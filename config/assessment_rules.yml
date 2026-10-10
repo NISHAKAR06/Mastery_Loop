@@ -1,0 +1,27 @@
+# Session behaviour. Every number here is also a bound the pure library enforces.
+theta:
+min: -4.0
+max: 4.0
+initial: 0.0
+initial_from_prior_mastery: true
+stopping:
+min_items: 8
+max_items: 30
+target_standard_error: 0.30
+stop_on_content_coverage: true
+selection:
+method: maximum_information
+top_k_randomisation: 5
+exposure_cap_fraction: 0.25
+exposure_window_hours: 168
+content_balancing:
+# minimum share of the session per content area
+fundamentals: 0.25
+application: 0.35
+analysis: 0.20
+synthesis: 0.20
+calibration:
+min_responses_before_use: 200
+discrimination_bounds: [0.4, 2.5]
+difficulty_bounds: [-3.5, 3.5]
+guessing_bounds: [0.0, 0.35]
