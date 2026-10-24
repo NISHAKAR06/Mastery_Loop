@@ -46,3 +46,7 @@ data/raw/responses/*
 exports/
 minio-data/
 qdrant-storage/
+data/processed/
+artifacts/
+reports/
+mlruns/
