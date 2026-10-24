@@ -1,0 +1,28 @@
+# MasteryLoop params.yaml
+kt_data:
+  val_fraction: 0.2          # split on LEARNERS, never on interactions
+  min_history: 5             # a prediction point needs this much history behind it
+  max_len: 200
+  min_item_count: 10         # rarer items are dropped rather than given an embedding
+
+sakt:
+  seed: 42
+  dim: 128
+  heads: 8
+  dropout: 0.2
+  batch_size: 64
+  lr: 0.001
+  epochs: 30
+  patience: 4
+  min_auc: 0.77              # objective 5.1
+  min_lift_points: 0.04      # and at least 4 points above BKT
+
+bkt:
+  em_iterations: 30
+  max_guess: 0.30            # the identifiability bound - not optional
+  max_slip: 0.30
+
+mastery:
+  threshold: 0.80
+  half_life_days: 30.0       # decay toward the 0.5 prior, not toward zero
+  confidence_saturation: 20

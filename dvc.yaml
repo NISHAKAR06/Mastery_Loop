@@ -1,0 +1,36 @@
+stages:
+  prepare_kt:
+    cmd: PYTHONPATH=ml/src python -m masteryloop_ml.data.prepare_ednet --out data/processed
+    deps:
+    - data/raw/ednet
+    - ml/src/masteryloop_ml/data/prepare_ednet.py
+    outs:
+    - data/processed/interactions.parquet
+
+  fit_bkt:
+    cmd: PYTHONPATH=ml/src python -m masteryloop_ml.kt.run_fit_bkt
+    deps:
+    - data/processed/interactions.parquet
+    - ml/src/masteryloop_ml/kt/bkt_baseline.py
+    - ml/src/masteryloop_ml/data/splits.py
+    params:
+    - bkt
+    - kt_data
+    outs:
+    - artifacts/bkt
+
+  train_sakt:
+    cmd: PYTHONPATH=ml/src python -m masteryloop_ml.kt.train
+    deps:
+    - data/processed/interactions.parquet
+    - ml/src/masteryloop_ml/kt/sakt.py
+    - ml/src/masteryloop_ml/kt/encoding.py
+    - ml/src/masteryloop_ml/data/splits.py
+    params:
+    - sakt
+    - kt_data
+    outs:
+    - artifacts/sakt
+    metrics:
+    - reports/m3_kt.json:
+        cache: false
