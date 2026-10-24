@@ -1,0 +1,21 @@
+experiment: masteryloop-m2
+run_name: 2pl-default
+split:
+  min_item_responses: 50 # below this, a and b are noise
+  min_user_responses: 20 # need enough per learner for the half/half protocol
+  test_frac: 0.2
+  val_frac: 0.1
+recovery: # the statistical harness: synthetic learners w/ known a, b
+  n_learners: 800
+  n_items: 120
+  k_per_learner: 40
+  seed: 7
+model:
+  l2: 1.0 # ridge on the per-item Newton fits (stabilises rare items)
+  outer_iters: 8 # alternating item/ability rounds
+hpo:
+  metric: val_auc
+  direction: maximize
+  space:
+    l2: [log, 0.1, 10.0]
+    outer_iters: [int, 4, 12]
