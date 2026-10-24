@@ -1,0 +1,25 @@
+# docker-compose.mlflow.yml - layered on the M1 stack:
+# docker compose -f docker-compose.yml -f docker-compose.mlflow.yml up -d mlflow
+services:
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.17.2
+    container_name: masteryloop-mlflow
+    depends_on: [postgres, minio]
+    environment:
+      MLFLOW_S3_ENDPOINT_URL: http://minio:9000
+      AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER:-mastery}
+      AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:-mastery_dev_2026}
+    command: >
+      bash -c "pip install --quiet psycopg2-binary boto3 &&
+      mlflow server --host 0.0.0.0 --port 5000
+      --backend-store-uri postgresql://${POSTGRES_USER:-mastery}:${POSTGRES_PASSWORD:-mastery_dev_2026}@postgres:5432/mlflow
+      --artifacts-destination s3://mlflow-artifacts --serve-artifacts"
+    ports: ["5000:5000"]
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - import urllib.request as u; u.urlopen('http://localhost:5000/health')
+      interval: 15s
+      retries: 10
