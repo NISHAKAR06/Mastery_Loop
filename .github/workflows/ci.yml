@@ -1,0 +1,29 @@
+name: CI
+on: [push, pull_request]
+
+jobs:
+  m3-knowledge-tracing:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+    - run: pip install numpy scikit-learn pytest==8.3.4 pyyaml
+    - name: Splits, truncation, encoding, BKT and mastery
+      run: PYTHONPATH=ml/src:services/kt/src:. pytest -q tests/m3/unit
+    - name: KT gates have not regressed
+      run: |
+        python - <<'PY'
+        import json, pathlib, sys
+        p = pathlib.Path("reports/m3_kt.json")
+        if not p.exists():
+          print("no KT report committed yet"); sys.exit(0)
+        r = json.load(open(p))
+        for g in r["gates"]:
+          print(("OK " if g["pass"] else "FAIL"), g["gate"], g["detail"])
+        print("recommendation:", r["recommendation"])
+        # a failing lift gate is a real result, not a broken build: it means
+        # BKT ships. The build fails only if the ABSOLUTE AUC floor is missed.
+        sys.exit(0 if r["gates"][0]["pass"] else 1)
+        PY
