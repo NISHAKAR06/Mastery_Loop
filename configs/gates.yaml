@@ -1,0 +1,13 @@
+# Promotion gates - read by promote.py and verify_m2.py.
+# path is a dotted key into reports/eval.json; op is one of >= <= > <
+gates:
+  # Published-competitive held-out prediction on tutoring data
+  - {path: model.auc, op: '>=', threshold: 0.7}
+  # Clearly beats 'every learner is average'
+  - {path: derived.auc_gain_vs_item_mean, op: '>=', threshold: 0.03}
+  # At least matches the best no-IRT predictor
+  - {path: derived.auc_gain_vs_two_way, op: '>=', threshold: 0.0}
+  # Discrimination estimates track truth on synthetic learners
+  - {path: recovery.corr_a, op: '>=', threshold: 0.8}
+  # Difficulty recovered within a third of an ability SD
+  - {path: recovery.rmse_b, op: '<=', threshold: 0.35}
