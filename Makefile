@@ -100,3 +100,46 @@ verify-m2: ## run M2 acceptance checks
 	$(PY) scripts/verify_m2.py
 
 m2: extract test-m2 train evaluate promote writeback verify-m2 ## run complete M2 pipeline
+
+# ---- M3 targets: append below the M2 block. .RECIPEPREFIX applies only to rules
+# written after it, so M1 and M2's tab-indented rules keep working and every M3
+# rule survives being copied out of this PDF. ----
+.RECIPEPREFIX = >
+PY ?= python
+M3_PATH := PYTHONPATH=ml/src:libs/psychocore/src:services/kt/src:.
+
+prepare-kt:
+> dvc repro prepare_kt
+
+fit-bkt:
+> dvc repro fit_bkt
+
+train-sakt:
+> dvc repro train_sakt
+
+eval-kt:
+> $(M3_PATH) $(PY) -m masteryloop_ml.kt.run_evaluate
+
+migrate-m3:
+> $(M3_PATH) alembic upgrade head
+
+kt-service:
+> $(M3_PATH) uvicorn kt_svc.main:app --port 8030
+
+kt-consumer:
+> $(M3_PATH) $(PY) -m kt_svc.run_consumer
+
+test-m3:
+> $(M3_PATH) $(PY) -m pytest -q tests/m3/unit
+
+test-m3-int:
+> $(M3_PATH) $(PY) -m pytest -q tests/m3/integration
+
+verify-m3:
+> $(M3_PATH) $(PY) scripts/verify_m3.py
+
+m3: test-m3 prepare-kt fit-bkt train-sakt eval-kt test-m3-int verify-m3
+
+.PHONY: prepare-kt fit-bkt train-sakt eval-kt migrate-m3 kt-service kt-consumer \
+ test-m3 test-m3-int verify-m3 m3
+
